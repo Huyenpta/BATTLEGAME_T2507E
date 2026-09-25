@@ -75,48 +75,72 @@
     </div>
 
     <script>
-    async function loadData() {
-        try {
+        const apiUrl =
+            "http://localhost:7062/api/getassetsbyplayer";
 
-            const response = await fetch(
-                "http://localhost:7062/api/getassetsbyplayer"
-            );
-
-            if (!response.ok) {
-                throw new Error("Cannot load data");
-            }
-
-            const data = await response.json();
-
-            const table =
-                document.getElementById("playerTable");
-
-            data.forEach(item => {
-
-                const row =
-                    document.createElement("tr");
-
-                row.innerHTML = `
-                    <td>${item.No}</td>
-                    <td>${item.PlayerName}</td>
-                    <td>${item.Level}</td>
-                    <td>${item.Age}</td>
-                    <td>${item.AssetName}</td>
-                `;
-
-                table.appendChild(row);
-            });
-
-        } catch (error) {
-
-            document.getElementById("error")
-                .innerText =
-                "Error loading player assets: "
-                + error.message;
+        
+        function delay(ms) {
+            return new Promise(resolve => setTimeout(resolve, ms));
         }
-    }
 
-    loadData();
+        async function loadData() {
+
+            const maxRetries = 10;
+
+            for (let attempt = 1; attempt <= maxRetries; attempt++) {
+
+                try {
+
+                    const response = await fetch(apiUrl);
+
+                    if (!response.ok) {
+                        throw new Error("Cannot load data");
+                    }
+
+                    const data = await response.json();
+
+                    const table =
+                        document.getElementById("playerTable");
+
+                    
+                    table.innerHTML = "";
+
+                    data.forEach(item => {
+
+                        const row =
+                            document.createElement("tr");
+
+                        row.innerHTML = `
+                                <td>${item.No}</td>
+                                <td>${item.PlayerName}</td>
+                                <td>${item.Level}</td>
+                                <td>${item.Age}</td>
+                                <td>${item.AssetName}</td>
+                            `;
+
+                        table.appendChild(row);
+                    });
+
+                    
+                    document.getElementById("error").innerText = "";
+
+                    return;
+
+                } catch (error) {
+
+                    
+                    if (attempt < maxRetries) {
+                        await delay(1000);
+                    } else {
+                        document.getElementById("error").innerText =
+                            "Error loading player assets: " +
+                            error.message;
+                    }
+                }
+            }
+        }
+
+        loadData();
     </script>
 
 </body>

@@ -23,8 +23,10 @@ public class GetAssetsByPlayer
             Route = "getassetsbyplayer")]
         HttpRequestData req)
     {
+        
         var data = await _context.PlayerAssets
             .AsNoTracking()
+            .OrderBy(x => x.Player.PlayerName)
             .Select(x => new
             {
                 PlayerName = x.Player.PlayerName,
@@ -34,6 +36,7 @@ public class GetAssetsByPlayer
             })
             .ToListAsync();
 
+        
         var result = data.Select((x, index) => new
         {
             No = index + 1,
@@ -43,8 +46,7 @@ public class GetAssetsByPlayer
             x.AssetName
         });
 
-        var response =
-            req.CreateResponse(HttpStatusCode.OK);
+        var response = req.CreateResponse(HttpStatusCode.OK);
 
         await response.WriteAsJsonAsync(result);
 
