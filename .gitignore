@@ -1,0 +1,8 @@
+.vs/
+**/.vs/
+bin/
+obj/
+**/bin/
+**/obj/
+local.settings.json
+**/local.settings.json
