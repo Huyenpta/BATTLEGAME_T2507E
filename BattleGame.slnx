@@ -1,3 +1,4 @@
 <Solution>
   <Project Path="BattleGameFunction/BattleGameFunction.csproj" />
+  <Project Path="BattleGameWeb/BattleGameWeb.csproj" />
 </Solution>
